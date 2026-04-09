@@ -1,0 +1,18 @@
+# Secret Files
+google-services.json
+GoogleService-Info.plist
+.env
+*.key
+service-account.json
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# IDEs & OS
+.idea/
+.vscode/
+*.swp
+.DS_Store

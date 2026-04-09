@@ -1,0 +1,14 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/swasthyasathi-api', './backend']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/swasthyasathi-api']
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'swasthyasathi-api'
+      - '--image=gcr.io/$PROJECT_ID/swasthyasathi-api'
+      - '--region=asia-south1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
