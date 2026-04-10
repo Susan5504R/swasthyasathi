@@ -1,4 +1,4 @@
-package com.swasthyasathi.flutter_app
+package com.swasthya.swasthyasathi
 
 import io.flutter.embedding.android.FlutterActivity
 

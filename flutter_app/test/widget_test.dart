@@ -14,7 +14,7 @@ void main() {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const MyApp());
 
-    // Verify that our setup UI is rendered.
-    expect(find.text('Setup Complete'), findsOneWidget);
+    // Verify that the login screen is rendered (due to GoRouter redirect).
+    expect(find.text('SwasthyaSathi - Login'), findsOneWidget);
   });
 }
