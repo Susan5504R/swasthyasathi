@@ -1,0 +1,14 @@
+{
+  "name": "swasthyasathi-functions",
+  "description": "Cloud Functions for SwasthyaSathi",
+  "dependencies": {
+    "firebase-admin": "^11.8.0",
+    "firebase-functions": "^4.3.1",
+    "node-fetch": "^2.7.0"
+  },
+  "engines": {
+    "node": "18"
+  },
+  "main": "index.js",
+  "private": true
+}
