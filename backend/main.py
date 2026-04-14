@@ -31,11 +31,16 @@ def health():
 
 @app.post("/process")
 async def process_new_document(req: ProcessRequest):
+    """
+    Called by the Firebase Cloud Function when a new document is uploaded.
+    Updates the Firestore document status and triggers the AI pipeline.
+    """
     db = firestore.client()
     doc_ref = db.collection('documents').document(req.uid).collection('docs').document(req.docId)
     
-    # 1. Update status to 'processing'
-    doc_ref.update({"processing_status": "processing"})
+    # 1. Update status to 'processing' (using set with merge=True for robustness)
+    doc_ref.set({"processing_status": "processing"}, merge=True)
+
     
     try:
         # 2. Download image from Firebase Storage

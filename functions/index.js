@@ -8,47 +8,60 @@ exports.onDocumentUpload = functions
   .onFinalize(async (object) => {
     const filePath = object.name;
     
+    // Check if the uploaded file is in a 'documents' path.
     // We expect paths like: users/{uid}/documents/{docId}/original.jpg
-    // Split: ['users', uid, 'documents', docId, 'original.jpg']
-    const parts = filePath.split('/');
-    
-    if (parts.length < 5 || parts[0] !== 'users' || parts[2] !== 'documents') {
-      console.log(`Ignoring file: ${filePath} (not a user discharge document)`);
-      return null;
+    if (!filePath.includes('/documents/')) {
+        console.log(`Skipping file: ${filePath}`);
+        return null;
     }
 
-    const uid = parts[1];
-    const docId = parts[3];
-
-    // Using Firebase Functions config or standard environment variables
-    const CLOUD_RUN_URL = process.env.CLOUD_RUN_URL || 'http://localhost:8080';
-
-    if (!CLOUD_RUN_URL) {
-      console.error("CLOUD_RUN_URL is not set.");
-      return null;
-    }
-
-    console.log(`Triggering processing for user: ${uid}, document: ${docId}`);
+    console.log(`New document uploaded: ${filePath}`);
 
     try {
-      // Node.js 20 has native fetch
-      const response = await fetch(`${CLOUD_RUN_URL}/process`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          uid,
-          docId,
-          storagePath: filePath
-        }),
-      });
+        const parts = filePath.split('/');
+        // Find indices of users and documents for robustness
+        const uidIndex = parts.indexOf('users') + 1;
+        const docIdIndex = parts.indexOf('documents') + 1;
+        
+        if (uidIndex === 0 || docIdIndex === 0 || uidIndex >= parts.length || docIdIndex >= parts.length) {
+            console.error('Invalid file path structure for UID/docId extraction.');
+            return null;
+        }
 
-      if (!response.ok) {
-        console.error(`Backend returned ${response.status}: ${response.statusText}`);
-      } else {
-        console.log(`Successfully triggered Cloud Run for ${docId}`);
-      }
+        const uid = parts[uidIndex];
+        const docId = parts[docIdIndex];
+
+        // Retrieve the Cloud Run URL from Firebase Functions configuration, 
+        // fallback to process.env for local or flexible setups.
+        const CLOUD_RUN_URL = functions.config().cloudrun?.url || process.env.CLOUD_RUN_URL || 'http://localhost:8080';
+
+        if (!CLOUD_RUN_URL) {
+            console.error('CLOUD_RUN_URL is not set. Please set it using: firebase functions:config:set cloudrun.url="..."');
+            return null;
+        }
+
+        console.log(`Triggering processing for user: ${uid}, document: ${docId} at ${CLOUD_RUN_URL}/process`);
+
+        // Node.js 20 has native fetch
+        const response = await fetch(`${CLOUD_RUN_URL}/process`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                uid: uid, 
+                docId: docId, 
+                storagePath: filePath 
+            }),
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`Failed to trigger backend. Status: ${response.status}, Error: ${errorText}`);
+        } else {
+            console.log(`Backend triggered successfully for ${docId}`);
+        }
+        
     } catch (error) {
-      console.error(`Error making request to Cloud Run: ${error}`);
+        console.error('Error triggering backend processing:', error);
     }
 
 
