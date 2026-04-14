@@ -146,15 +146,14 @@ class _ProcessingScreenState extends State<ProcessingScreen>
           if (status == 'done') {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (mounted) {
-                // TODO: Navigate to care plan screen once built (Phase 4)
-                // For now, go back to home with a success message
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('✅ Care plan taiyaar hai!'),
                     backgroundColor: Colors.green,
                   ),
                 );
-                context.go('/');
+                // Navigate to care plan screen, passing the docId
+                context.push('/care-plan', extra: widget.docId);
               }
             });
           }

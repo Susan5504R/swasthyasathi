@@ -9,6 +9,7 @@ import 'screens/auth/otp_verify_screen.dart';
 import 'screens/onboarding/onboarding_screen.dart';
 import 'screens/scan/scan_screen.dart';
 import 'screens/scan/processing_screen.dart';
+import 'screens/care_plan/care_plan_screen.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -94,6 +95,13 @@ final GoRouter _router = GoRouter(
           uid: args['uid'] ?? '',
           docId: args['docId'] ?? '',
         );
+      },
+    ),
+    GoRoute(
+      path: '/care-plan',
+      builder: (context, state) {
+        final docId = state.extra as String? ?? '';
+        return CarePlanScreen(docId: docId);
       },
     ),
   ],
