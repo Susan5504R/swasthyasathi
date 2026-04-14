@@ -124,3 +124,4 @@ async def process_new_document(req: ProcessRequest):
             "error_reason": str(e)
         })
         raise HTTPException(status_code=500, detail=str(e))
+

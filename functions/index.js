@@ -1,6 +1,7 @@
 const functions = require('firebase-functions');
 
 // Listens to uploads to Firebase Storage
+
 exports.onDocumentUpload = functions
   .region('asia-south1')
   .storage.object()
@@ -49,6 +50,7 @@ exports.onDocumentUpload = functions
     } catch (error) {
       console.error(`Error making request to Cloud Run: ${error}`);
     }
+
 
     return null;
   });
